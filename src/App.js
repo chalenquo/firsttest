@@ -1,25 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import api from "./api/api";
+import {useEffect, useState} from "react";
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [users, setUsers] = useState()
+
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await api.get('/users')
+                setUsers(response.data)
+            } catch (err) {
+                if (err.response) {
+                    console.log(err.response.data)
+                    console.log(err.response.status)
+                    console.log(err.response.headers)
+                } else {
+                    console.log(`Error: ${err.message}`)
+                }
+            }
+        }
+
+        fetchUsers()
+    }, [])
+
+    return (
+        users && users.map(user => {
+            return (
+                <div key={user.id}>
+                    <strong>{user.name}</strong>
+                    <p>{user.email}</p>
+                    <p>{user.address.suite}</p>
+                </div>
+            )
+        })
+    )
 }
 
 export default App;
